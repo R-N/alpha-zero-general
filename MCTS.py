@@ -85,8 +85,10 @@ class MCTS():
 
         if s not in self.Ps:
             # leaf node
-            self.Ps[s], v = self.nnet.predict(canonicalBoard)
+            
+            # see: https://github.com/suragnair/alpha-zero-general/issues/77
             valids = self.game.getValidMoves(canonicalBoard, 1)
+            self.Ps[s], v = self.nnet.predict((canonicalBoard, valids))
             self.Ps[s] = self.Ps[s] * valids      # masking invalid moves
             if dirichlet_noise:
                 self.applyDirNoise(s, valids)
