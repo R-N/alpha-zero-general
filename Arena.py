@@ -43,6 +43,11 @@ class Arena():
         curPlayer = 1
         board = self.game.getInitBoard()
         it = 0
+
+        for player in players[0], players[2]:
+            if hasattr(player, "startGame"):
+                player.startGame()
+
         while self.game.getGameEnded(board, curPlayer) == 0:
             it += 1
             if verbose:
@@ -60,7 +65,18 @@ class Arena():
                 log.error(f"Action {action} is not valid!")
                 log.debug(f"valids = {valids}")
                 assert valids[action] > 0
+
+            # Notifying the opponent for the move
+            opponent = players[-curPlayer + 1]
+            if hasattr(opponent, "notify"):
+                opponent.notify(board, action)
+
             board, curPlayer = self.game.getNextState(board, curPlayer, action)
+
+        for player in players[0], players[2]:
+            if hasattr(player, "endGame"):
+                player.endGame()
+
         if verbose:
             print(
                 f"Game over: Turn {it}, "
